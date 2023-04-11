@@ -1,0 +1,28 @@
+{
+  "name": "apis-com-nodejs-express",
+  "version": "1.0.0",
+  "description": "Aprendendo apis com nodejs e express pelo curso da Alura.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielaFabianpc/apis-com-nodejs-express.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GabrielaFabianpc/apis-com-nodejs-express/issues"
+  },
+  "homepage": "https://github.com/GabrielaFabianpc/apis-com-nodejs-express#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "express": "^4.17.3"
+  }
+}
