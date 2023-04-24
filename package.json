@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/GabrielaFabianpc/apis-com-nodejs-express#readme",
   "devDependencies": {
+    "eslint": "^8.39.0",
     "nodemon": "^2.0.15"
   },
   "dependencies": {

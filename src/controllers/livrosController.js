@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import livros from "../models/Livro.js";
 
 class LivroController {
