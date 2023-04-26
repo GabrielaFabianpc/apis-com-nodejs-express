@@ -58,7 +58,7 @@ class LivroController {
       const livrosPorAutor = await livros.find({ editora: editora });
       res.status(200).send(livrosPorAutor);
     } catch (error) {
-      res.status(500).send({ message: "Falha ao listar livro por id!" });
+      res.status(500).send({ message: "Erro interno no servidor!" });
     }
   };
 }
