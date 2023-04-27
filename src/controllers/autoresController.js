@@ -1,15 +1,16 @@
+import NaoEncontrado from "../erros/NaoEncontrado.js";
 import autores from "../models/Autor.js";
 
 class AutorController {
-  static listarAutores = async (req, res) => {
+  static listarAutores = async (req, res, next) => {
     try {
       const autoresResultados = await autores.find();
       res.status(200).json(autoresResultados);
     } catch (error) {
-      res.status(500).json({ message: "Erro interno no servidor!" });
+      next(error);
     }
   };
-  static cadastrarAutor = async (req, res) => {
+  static cadastrarAutor = async (req, res, next) => {
     try {
       const { nome } = req.body; // assumindo que o nome é a propriedade única que identifica um autor
       const autorExistente = await autores.findOne({ nome }); // procurando um autor com o mesmo nome
@@ -21,10 +22,10 @@ class AutorController {
         res.status(200).json(autor);
       }
     } catch (error) {
-      res.status(500).json(error);
+      next(error);
     }
   };
-  static atualizarAutor = async (req, res) => {
+  static atualizarAutor = async (req, res, next) => {
     const id = await req.params.id;
     const { nome, nacionalidade } = req.body;
     const autorBody = { nome, nacionalidade };
@@ -35,21 +36,25 @@ class AutorController {
       }
       res.status(200).json(autorBody);
     } catch (error) {
-      res.status(500).send({ message: error.message });
+      next(error);
     }
   };
 
-  static listarAutorPorId = async (req, res) => {
+  static listarAutorPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
       const autorResultado = await autores.findById(id);
-      res.status(200).send(autorResultado);
+      if (autorResultado !== null) {
+        res.status(200).send(autorResultado);
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado."));
+      }
     } catch (erro) {
-      res.status(500).send({ message: "Id do Autor não localizado." });
+      next(erro);
     }
   };
 
-  static deletarAutor = async (req, res) => {
+  static deletarAutor = async (req, res, next) => {
     try {
       const id = req.params.id;
       const autorDelete = await autores.deleteOne({ _id: id });
@@ -57,13 +62,13 @@ class AutorController {
       if (autorDelete.deletedCount == 0) {
         res
           .status(422)
-          .json({ message: "Autor já deletada do nosso Sistema!" });
+          .json({ message: "Autor(a) já deletada do nosso Sistema!" });
         return;
       } else {
         res.status(200).json({ message: "Autor(a) Deletada com Sucesso!" });
       }
     } catch (error) {
-      res.status(500).json({ message: "Falha ao deletar o autor(a)!" });
+      next(error);
     }
   };
 }

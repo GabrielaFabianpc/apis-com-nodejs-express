@@ -1,35 +1,35 @@
 import livros from "../models/Livro.js";
 
 class LivroController {
-  static listarLivros = async (req, res) => {
+  static listarLivros = async (req, res, next) => {
     try {
       const livrosListados = await livros.find().populate("autor").exec();
       res.status(200).json(livrosListados);
     } catch (error) {
-      res.status(500).send({ message: "Falha ao listar livros!" });
+      next(error);
     }
   };
-  static cadastrarLivro = async (req, res) => {
+  static cadastrarLivro = async (req, res, next) => {
     try {
-      let livro = await new livros(req.body);
-      livro.save();
-      res.status(201).json(livro);
+      let livro = new livros(req.body);
+      const livroResultado = await livro.save();
+      res.status(201).send(livroResultado.toJSON());
     } catch (error) {
-      res.status(500).send({ message: "Falha ao cadastrar livro!" });
+      next(error);
     }
   };
 
-  static atualizarLivro = async (req, res) => {
+  static atualizarLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
       await livros.findByIdAndUpdate(id, { $set: req.body });
       res.status(200).send({ message: "Livro atualizado com sucesso!" });
     } catch (error) {
-      res.status(500).send({ message: error.message });
+      next(error);
     }
   };
 
-  static listarLivroPorId = async (req, res) => {
+  static listarLivroPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
       const livrosPorId = await livros
@@ -38,27 +38,27 @@ class LivroController {
         .exec();
       res.status(200).send(livrosPorId);
     } catch (error) {
-      res.status(500).send({ message: "Falha ao listar livros!" });
+      next(error);
     }
   };
 
-  static deletarLivro = async (req, res) => {
+  static deletarLivro = async (req, res, next) => {
     try {
       const id = req.params.id;
       await livros.findByIdAndDelete(id);
       res.status(200).send({ message: "Livro deletado com sucesso." });
     } catch (error) {
-      res.status(500).send({ message: error.message });
+      next(error);
     }
   };
 
-  static listarLivroPorAutor = async (req, res) => {
+  static listarLivroPorAutor = async (req, res, next) => {
     try {
       const editora = req.query.editora;
       const livrosPorAutor = await livros.find({ editora: editora });
       res.status(200).send(livrosPorAutor);
     } catch (error) {
-      res.status(500).send({ message: "Erro interno no servidor!" });
+      next(error);
     }
   };
 }
