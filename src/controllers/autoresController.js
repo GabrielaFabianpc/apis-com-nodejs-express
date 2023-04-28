@@ -1,5 +1,5 @@
 import NaoEncontrado from "../erros/NaoEncontrado.js";
-import autores from "../models/Autor.js";
+import { autores } from "../models/index.js";
 
 class AutorController {
   static listarAutores = async (req, res, next) => {
@@ -31,10 +31,13 @@ class AutorController {
     const autorBody = { nome, nacionalidade };
     try {
       const autorUpdate = await autores.updateOne({ _id: id }, autorBody);
-      if (!autorUpdate) {
-        res.status(400).json({ message: "Autor não encontrado no sistema" });
+      console.log(autorUpdate);
+
+      if (autorUpdate.matchedCount == 0) {
+        next(new NaoEncontrado("Id do Autor não localizado."));
+      } else {
+        res.status(200).json(autorBody);
       }
-      res.status(200).json(autorBody);
     } catch (error) {
       next(error);
     }
@@ -58,11 +61,8 @@ class AutorController {
     try {
       const id = req.params.id;
       const autorDelete = await autores.deleteOne({ _id: id });
-      console.log(autorDelete);
       if (autorDelete.deletedCount == 0) {
-        res
-          .status(422)
-          .json({ message: "Autor(a) já deletada do nosso Sistema!" });
+        next(new NaoEncontrado("Id do autor não localizado!"));
         return;
       } else {
         res.status(200).json({ message: "Autor(a) Deletada com Sucesso!" });
