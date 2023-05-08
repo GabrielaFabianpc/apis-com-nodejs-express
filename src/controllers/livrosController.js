@@ -1,11 +1,25 @@
 import NaoEncontrado from "../erros/NaoEncontrado.js";
+import ReqIncorreta from "../erros/ReqIncorreta.js";
 import { autores, livros } from "../models/index.js";
 
 class LivroController {
   static listarLivros = async (req, res, next) => {
     try {
-      const livrosListados = await livros.find().populate("autor").exec();
-      res.status(200).json(livrosListados);
+      let { limite = 5, pagina = 1 } = req.query;
+      limite = parseInt(limite);
+      pagina = parseInt(pagina);
+      if (limite > 0 && pagina > 0) {
+        const livrosListados = await livros
+          .find()
+          .sort({ titulo: 1 })
+          .skip((pagina - 1) * limite)
+          .limit(limite)
+          .populate("autor")
+          .exec();
+        res.status(200).json(livrosListados);
+      } else {
+        next(new ReqIncorreta());
+      }
     } catch (error) {
       next(error);
     }
@@ -67,9 +81,12 @@ class LivroController {
   static listarLivroPorFiltro = async (req, res, next) => {
     try {
       const busca = await buscaPorFiltro(req.query);
-
-      const livrosPorFiltro = await livros.find(busca).populate("autor");
-      res.status(200).send(livrosPorFiltro);
+      if (busca !== null) {
+        const livrosPorFiltro = await livros.find(busca).populate("autor");
+        res.status(200).send(livrosPorFiltro);
+      } else {
+        res.status(200).send([]);
+      }
     } catch (error) {
       next(error);
     }
@@ -81,7 +98,7 @@ async function buscaPorFiltro(parametros) {
 
   //const regex = new RegExp(titulo, "i"); f
 
-  const busca = {};
+  let busca = {};
   if (editora) busca.editora = editora;
   if (titulo) busca.titulo = { $regex: titulo, $options: "i" };
   if (minPaginas || maxPaginas) busca.numeroPaginas = {};
@@ -92,8 +109,11 @@ async function buscaPorFiltro(parametros) {
   if (nomeAutor) {
     const autor = await autores.findOne({ nome: nomeAutor });
 
-    const autorId = autor._id;
-    busca.autor = autorId;
+    if (autor !== null) {
+      busca.autor = autor._id;
+    } else {
+      busca = null;
+    }
   }
   return busca;
 }

@@ -7,7 +7,7 @@ const autorSchema = new mongoose.Schema(
       type: String,
       required: [true, "O nome do Autor(a) é obrigatório!"],
       enum: {
-        values: ["Gabriela", "Trajano"],
+        values: ["Gabriela", "Trajano", "Ana Gabriela"],
         message: "O autor(a) {VALUE} não é permitido! ",
       },
     },
@@ -16,7 +16,7 @@ const autorSchema = new mongoose.Schema(
       type: String,
       required: true,
       enum: {
-        values: ["Italiano", "Frances"],
+        values: ["Italiana", "Frances"],
         message: "A nacionalidade {VALUE} não é permitida!",
       },
     },
