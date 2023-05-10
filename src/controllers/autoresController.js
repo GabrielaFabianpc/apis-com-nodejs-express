@@ -31,7 +31,6 @@ class AutorController {
     const autorBody = { nome, nacionalidade };
     try {
       const autorUpdate = await autores.updateOne({ _id: id }, autorBody);
-      console.log(autorUpdate);
 
       if (autorUpdate.matchedCount == 0) {
         next(new NaoEncontrado("Id do Autor não localizado."));
